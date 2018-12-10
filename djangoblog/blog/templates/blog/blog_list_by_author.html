@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Author: {{author}}</h1>
+
+    {% if blog_list %}
+    <h3>Blogs list</h3>
+    <ul>
+
+      {% for blog in blog_list %}
+      <li>
+        <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a> ({{blog.post_date}})</a>
+      </li>
+      {% endfor %}
+
+    </ul>
+
+    {% else %}
+      <p>Author has no posts yet.</p>
+    {% endif %}
+{% endblock %}
+
