@@ -72,7 +72,8 @@ class Feed(LoginRequiredMixin,generic.ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        return Blog.objects.filter(author__following__user=self.request.user)
+        return Blog.objects.filter(author__following__user=self.request.user).\
+            exclude(readedby__user=self.request.user)
 
 
 def follow_author(request, pk):
@@ -97,3 +98,6 @@ def unfollow_author(request, pk):
         author_to_unfollow.following.remove(Author.objects.get(user=author__user))
         data['message'] = "You are now unfollowed {}".format(author_to_unfollow)
     return JsonResponse(data, safe=False)
+
+def markAsRead(request, pk):
+    pass

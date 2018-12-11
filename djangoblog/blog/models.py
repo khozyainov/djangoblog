@@ -10,6 +10,7 @@ from django.core.mail import send_mass_mail
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     following = models.ManyToManyField('Author', related_name='followers', null=True, blank=True)
+    #readedpost = models.ManyToManyField('Blog', related_name='readedby', null=True, blank=True)
 
     class Meta:
         ordering = ["user"]
@@ -34,7 +35,7 @@ class Blog(models.Model):
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
     text = models.TextField()
     post_date = models.DateTimeField(auto_now_add=True)
-
+    readedby = models.ManyToManyField('Author', related_name='readed', null=True, blank=True)
 
     class Meta:
         ordering = ['-post_date']

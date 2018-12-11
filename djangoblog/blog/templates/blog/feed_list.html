@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
     {% block content %}
-    <h1>Posts</h1>
+    <h1>My feed</h1>
 
     {% if blog_list %}
         <ul>
-
             {% for blog in blog_list %}
                 <li>
                     <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a>
                     ({{ blog.author }}) ({{ blog.post_date }})
+                    <div class="message-section" style="display:none;"></div>
+                    <button data-url="{% url 'mark-as-read' blog.pk %}" class="readed-button" type="button">mark as read</button>
                 </li>
             {% endfor %}
-
         </ul>
     {% else %}
         <p>There are no posts.</p>
