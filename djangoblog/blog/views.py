@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
@@ -47,7 +48,8 @@ class BlogListbyAuthorView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(BlogListbyAuthorView, self).get_context_data(**kwargs)
-        context['author'] = get_object_or_404(Author)
+        id = self.kwargs['pk']
+        context['author'] = get_object_or_404(Author, pk = id)
         return context
 
 
@@ -60,3 +62,21 @@ class BlogCreate(LoginRequiredMixin, CreateView):
         return super(BlogCreate, self).form_valid(form)
 
 
+class Feed(LoginRequiredMixin,generic.ListView):
+    model = Blog
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Blog.objects.filter(author__following__user=self.request.user)
+
+
+def follow_author(request, pk):
+    author_to_follow = get_object_or_404(Author, pk=pk)
+    author__user = request.user
+    data = {}
+    if author_to_follow.following.filter(id=author__user.id).exists():
+        data['message'] = "You are already following this user."
+    else:
+        author_to_follow.following.add(Author.objects.get(user=author__user))
+        data['message'] = "You are now following {}".format(author_to_follow)
+    return JsonResponse(data, safe=False)

@@ -2,7 +2,12 @@
 
 {% block content %}
     <h1>Author: {{author}}</h1>
-
+    {% if user.is_authenticated %}
+        {% if user.pk != author.user.pk %}
+        <div class="message-section" style="display:none;"></div>
+        <button data-url="{% url 'follow-author' author.pk %}" class="follow-button" type="button">Follow</button>
+        {% endif %}
+    {% endif %}
     {% if blog_list %}
     <h3>Blogs list</h3>
     <ul>
@@ -18,5 +23,12 @@
     {% else %}
       <p>Author has no posts yet.</p>
     {% endif %}
+    <script>
+        $('.follow-button').click(function() {
+            $.get($(this).data('url'), function(response) {
+                $('.message-section').text(response.message).show();
+            });
+        });
+    </script>
 {% endblock %}
 
