@@ -2,10 +2,19 @@ from django.shortcuts import render
 from .models import Author, Blog
 from django.views import generic
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-def index(request):
-    return render(request, 'index.html')
+#def index(request):
+#    return render(request, 'index.html')
+
+class Index(LoginRequiredMixin, generic.ListView):
+    model = Blog
+    paginate_by = 5
+    template_name = 'index.html'
+
+    def get_queryset(self):
+        return Blog.objects.filter(author__user=self.request.user).order_by('-post_date')
 
 
 class BlogListView(generic.ListView):
