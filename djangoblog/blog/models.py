@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from django.core.mail import send_mass_mail
+
 
 # Create your models here.
 class Author(models.Model):
@@ -33,6 +35,7 @@ class Blog(models.Model):
     text = models.TextField()
     post_date = models.DateTimeField(auto_now_add=True)
 
+
     class Meta:
         ordering = ['-post_date']
 
@@ -41,3 +44,19 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+
+@receiver(post_save, sender=Blog)
+def first_mail(sender, instance, **kwargs):
+    if kwargs['created']:
+        messages = tuple()
+        author = Author.objects.get(user=instance.author.user)
+        post_url = '127.0.0.1:8000' + instance.get_absolute_url()
+        for follower in author.following.all():
+            email_to = follower.user.email
+            message = ('New post on Django Blog',
+                       f'Hey, here new post ({post_url})',
+                       'from@djangoblog.com',
+                       [f'{email_to}'],)
+            messages += (message,)
+        send_mass_mail(messages)
