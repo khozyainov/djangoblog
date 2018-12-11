@@ -60,8 +60,3 @@ class BlogCreate(LoginRequiredMixin, CreateView):
         return super(BlogCreate, self).form_valid(form)
 
 
-class Feed(generic.ListView):
-    model = Blog
-
-    def get_queryset(self):
-        return Blog.objects.filter(author__followers__follower__id=self.request.user.id).ordered_by('post_date')

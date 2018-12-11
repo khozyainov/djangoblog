@@ -15,11 +15,6 @@ class Author(models.Model):
     def __str__(self):
         return self.user.username
 
-class Follow(models.Model):
-    followed = models.OneToOneField(Author, on_delete=models.CASCADE, related_name="followed")
-    followers = models.ManyToManyField(Author, related_name="followers", blank=True)
-
-
 
 class Blog(models.Model):
     title = models.CharField(max_length=200)
