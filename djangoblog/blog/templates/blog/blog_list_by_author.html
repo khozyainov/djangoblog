@@ -4,8 +4,13 @@
     <h1>Author: {{author}}</h1>
     {% if user.is_authenticated %}
         {% if user.pk != author.user.pk %}
-        <div class="message-section" style="display:none;"></div>
-        <button data-url="{% url 'follow-author' author.pk %}" class="follow-button" type="button">Follow</button>
+            {% if is_followed %}
+                <div class="message-section" style="display:none;"></div>
+                <button data-url="{% url 'unfollow-author' author.pk %}" class="unfollow-button" type="button">Unfollow</button>
+            {% else %}
+                <div class="message-section" style="display:none;"></div>
+                <button data-url="{% url 'follow-author' author.pk %}" class="follow-button" type="button">Follow</button>
+            {% endif %}
         {% endif %}
     {% endif %}
     {% if blog_list %}
@@ -25,6 +30,11 @@
     {% endif %}
     <script>
         $('.follow-button').click(function() {
+            $.get($(this).data('url'), function(response) {
+                $('.message-section').text(response.message).show();
+            });
+        });
+         $('.unfollow-button').click(function() {
             $.get($(this).data('url'), function(response) {
                 $('.message-section').text(response.message).show();
             });

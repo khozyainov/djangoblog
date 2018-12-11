@@ -49,7 +49,12 @@ class BlogListbyAuthorView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(BlogListbyAuthorView, self).get_context_data(**kwargs)
         id = self.kwargs['pk']
-        context['author'] = get_object_or_404(Author, pk = id)
+        author = get_object_or_404(Author, pk = id)
+        context['author'] = author
+        if author.following.filter(user=self.request.user).exists():
+            context['is_followed'] = True
+        else:
+            context['is_followed'] = False
         return context
 
 
@@ -74,9 +79,21 @@ def follow_author(request, pk):
     author_to_follow = get_object_or_404(Author, pk=pk)
     author__user = request.user
     data = {}
-    if author_to_follow.following.filter(id=author__user.id).exists():
-        data['message'] = "You are already following this user."
+    if author_to_follow.following.filter(user=author__user).exists():
+        data['message'] = "You are already following this author."
     else:
         author_to_follow.following.add(Author.objects.get(user=author__user))
         data['message'] = "You are now following {}".format(author_to_follow)
+    return JsonResponse(data, safe=False)
+
+
+def unfollow_author(request, pk):
+    author_to_unfollow = get_object_or_404(Author, pk=pk)
+    author__user = request.user
+    data = {}
+    if not author_to_unfollow.following.filter(user=author__user).exists():
+        data['message'] = "You are already unfollowed this author."
+    else:
+        author_to_unfollow.following.remove(Author.objects.get(user=author__user))
+        data['message'] = "You are now unfollowed {}".format(author_to_unfollow)
     return JsonResponse(data, safe=False)

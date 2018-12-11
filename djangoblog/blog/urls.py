@@ -12,5 +12,6 @@ urlpatterns = [
     path('author/<int:pk>', views.BlogListbyAuthorView.as_view(), name='blogs-by-author'),
     path('blog/create/', views.BlogCreate.as_view(), name='blog-create'),
     path('follow/<int:pk>', views.follow_author, name='follow-author'),
+    path('unfollow/<int:pk>', views.unfollow_author, name='unfollow-author'),
     path('feed/', views.Feed.as_view(), name='feed'),
 ]
