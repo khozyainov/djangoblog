@@ -30,14 +30,16 @@
     {% endif %}
     <script>
         $('.follow-button').click(function() {
-            $.get($(this).data('url'), function(response) {
-                $('.message-section').text(response.message).show();
+            $.get($(this).data('url'), function() {
+
             });
+            location.reload();
         });
          $('.unfollow-button').click(function() {
-            $.get($(this).data('url'), function(response) {
-                $('.message-section').text(response.message).show();
+            $.get($(this).data('url'), function() {
+
             });
+            location.reload();
         });
     </script>
 {% endblock %}

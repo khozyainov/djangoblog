@@ -70,6 +70,7 @@ class BlogCreate(LoginRequiredMixin, CreateView):
 class Feed(LoginRequiredMixin,generic.ListView):
     model = Blog
     paginate_by = 5
+    template_name = 'blog/feed_list.html'
 
     def get_queryset(self):
         return Blog.objects.filter(author__following__user=self.request.user).\
@@ -80,24 +81,20 @@ def follow_author(request, pk):
     author_to_follow = get_object_or_404(Author, pk=pk)
     author__user = request.user
     data = {}
-    if author_to_follow.following.filter(user=author__user).exists():
-        data['message'] = "You are already following this author."
-    else:
-        author_to_follow.following.add(Author.objects.get(user=author__user))
-        data['message'] = "You are now following {}".format(author_to_follow)
-    return JsonResponse(data, safe=False)
-
+    author_to_follow.following.add(Author.objects.get(user=author__user))
+    return JsonResponse(data={}, safe=False)
 
 def unfollow_author(request, pk):
     author_to_unfollow = get_object_or_404(Author, pk=pk)
-    author__user = request.user
-    data = {}
-    if not author_to_unfollow.following.filter(user=author__user).exists():
-        data['message'] = "You are already unfollowed this author."
-    else:
-        author_to_unfollow.following.remove(Author.objects.get(user=author__user))
-        data['message'] = "You are now unfollowed {}".format(author_to_unfollow)
-    return JsonResponse(data, safe=False)
+    author_user = request.user
+    author_to_unfollow.following.remove(Author.objects.get(user=author_user))
+    readers = Author.objects.get(user=author_user)
+    for i in Blog.objects.filter(author__user=author_to_unfollow.user, readedby__user=author_user):
+        readers.readed.remove(i)
+
+    return JsonResponse(data={}, safe=False)
 
 def markAsRead(request, pk):
-    pass
+    blog_as_read = get_object_or_404(Blog, pk=pk)
+    readedby = request.user
+    blog_as_read.readedby.add(Author.objects.get(user=readedby))

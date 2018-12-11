@@ -9,7 +9,6 @@
                 <li>
                     <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a>
                     ({{ blog.author }}) ({{ blog.post_date }})
-                    <div class="message-section" style="display:none;"></div>
                     <button data-url="{% url 'mark-as-read' blog.pk %}" class="readed-button" type="button">mark as read</button>
                 </li>
             {% endfor %}
@@ -17,4 +16,10 @@
     {% else %}
         <p>There are no posts.</p>
     {% endif %}
+    <script>
+        $('.readed-button').click(function() {
+            $.get($(this).data('url'), function() {});
+            location.reload();
+        });
+    </script>
 {% endblock %}
