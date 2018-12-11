@@ -10,5 +10,5 @@ urlpatterns = [
     path('authors/', views.AuthorListView.as_view(), name='authors'),
     path('blog/<int:pk>', views.BlogDetailView.as_view(), name='blog-detail'),
     path('author/<int:pk>', views.BlogListbyAuthorView.as_view(), name='blogs-by-author'),
-
+    path('blog/create/', views.BlogCreate.as_view(), name='blog-create'),
 ]

@@ -1,8 +1,12 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+
 from .models import Author, Blog
 from django.views import generic
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 
 # Create your views here.
 #def index(request):
@@ -45,3 +49,19 @@ class BlogListbyAuthorView(generic.ListView):
         context = super(BlogListbyAuthorView, self).get_context_data(**kwargs)
         context['author'] = get_object_or_404(Author)
         return context
+
+
+class BlogCreate(LoginRequiredMixin, CreateView):
+    model = Blog
+    fields = ['title', 'text']
+
+    def form_valid(self, form):
+        form.instance.author = Author.objects.get(user=self.request.user)
+        return super(BlogCreate, self).form_valid(form)
+
+
+class Feed(generic.ListView):
+    model = Blog
+
+    def get_queryset(self):
+        return Blog.objects.filter(author__followers__follower__id=self.request.user.id).ordered_by('post_date')
