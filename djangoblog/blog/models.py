@@ -10,7 +10,6 @@ from django.core.mail import send_mass_mail
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     following = models.ManyToManyField('Author', related_name='followers', null=True, blank=True)
-    #readedpost = models.ManyToManyField('Blog', related_name='readedby', null=True, blank=True)
 
     class Meta:
         ordering = ["user"]
@@ -49,10 +48,11 @@ class Blog(models.Model):
 
 @receiver(post_save, sender=Blog)
 def first_mail(sender, instance, **kwargs):
+    domain = '127.0.0.1:8000'
     if kwargs['created']:
         messages = tuple()
         author = Author.objects.get(user=instance.author.user)
-        post_url = '127.0.0.1:8000' + instance.get_absolute_url()
+        post_url = domain + instance.get_absolute_url()
         for follower in author.following.all():
             email_to = follower.user.email
             message = ('New post on Django Blog',

@@ -1,18 +1,13 @@
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.urls import reverse_lazy
 
 from .models import Author, Blog
 from django.views import generic
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView
 
 
 # Create your views here.
-#def index(request):
-#    return render(request, 'index.html')
-
 class Index(LoginRequiredMixin, generic.ListView):
     model = Blog
     paginate_by = 5
@@ -79,22 +74,17 @@ class Feed(LoginRequiredMixin,generic.ListView):
 
 def follow_author(request, pk):
     author_to_follow = get_object_or_404(Author, pk=pk)
-    author__user = request.user
-    data = {}
-    author_to_follow.following.add(Author.objects.get(user=author__user))
+    author_to_follow.following.add(Author.objects.get(user=request.user))
     return JsonResponse(data={}, safe=False)
 
 def unfollow_author(request, pk):
     author_to_unfollow = get_object_or_404(Author, pk=pk)
-    author_user = request.user
-    author_to_unfollow.following.remove(Author.objects.get(user=author_user))
-    readers = Author.objects.get(user=author_user)
-    for i in Blog.objects.filter(author__user=author_to_unfollow.user, readedby__user=author_user):
-        readers.readed.remove(i)
-
+    author_user = Author.objects.get(user=request.user)
+    author_to_unfollow.following.remove(author_user)
+    for readedby in Blog.objects.filter(author__user=author_to_unfollow.user, readedby__user=request.user):
+        author_user.readed.remove(readedby)
     return JsonResponse(data={}, safe=False)
 
 def markAsRead(request, pk):
     blog_as_read = get_object_or_404(Blog, pk=pk)
-    readedby = request.user
-    blog_as_read.readedby.add(Author.objects.get(user=readedby))
+    blog_as_read.readedby.add(Author.objects.get(user=request.user))
