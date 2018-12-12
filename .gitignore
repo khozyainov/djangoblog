@@ -2,4 +2,3 @@
 .idea
 tmp
 *.pyc
-__pycache__
