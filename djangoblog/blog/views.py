@@ -88,3 +88,4 @@ def unfollow_author(request, pk):
 def markAsRead(request, pk):
     blog_as_read = get_object_or_404(Blog, pk=pk)
     blog_as_read.readedby.add(Author.objects.get(user=request.user))
+    return JsonResponse(data={}, safe=False)
