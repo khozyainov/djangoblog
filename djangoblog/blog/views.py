@@ -77,6 +77,7 @@ def follow_author(request, pk):
     author_to_follow.following.add(Author.objects.get(user=request.user))
     return JsonResponse(data={}, safe=False)
 
+
 def unfollow_author(request, pk):
     author_to_unfollow = get_object_or_404(Author, pk=pk)
     author_user = Author.objects.get(user=request.user)
@@ -85,7 +86,8 @@ def unfollow_author(request, pk):
         author_user.readed.remove(readedby)
     return JsonResponse(data={}, safe=False)
 
-def markAsRead(request, pk):
+
+def mark_as_read(request, pk):
     blog_as_read = get_object_or_404(Blog, pk=pk)
     blog_as_read.readedby.add(Author.objects.get(user=request.user))
     return JsonResponse(data={}, safe=False)

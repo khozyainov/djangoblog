@@ -13,6 +13,6 @@ urlpatterns = [
     path('follow/<int:pk>', views.follow_author, name='follow-author'),
     path('unfollow/<int:pk>', views.unfollow_author, name='unfollow-author'),
     path('feed/', views.Feed.as_view(), name='feed'),
-    path('readed/<int:pk>', views.markAsRead, name='mark-as-read'),
+    path('readed/<int:pk>', views.mark_as_read, name='mark-as-read'),
 
 ]

@@ -29,6 +29,7 @@ class Author(models.Model):
     def save_user_profile(sender, instance, **kwargs):
         instance.author.save()
 
+
 class Blog(models.Model):
     title = models.CharField(max_length=200)
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
