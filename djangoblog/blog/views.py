@@ -46,10 +46,11 @@ class BlogListbyAuthorView(generic.ListView):
         id = self.kwargs['pk']
         author = get_object_or_404(Author, pk = id)
         context['author'] = author
-        if author.following.filter(user=self.request.user).exists():
-            context['is_followed'] = True
-        else:
-            context['is_followed'] = False
+        if not self.request.user.is_anonymous:
+            if author.following.filter(user=self.request.user).exists():
+                context['is_followed'] = True
+            else:
+                context['is_followed'] = False
         return context
 
 

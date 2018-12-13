@@ -8,7 +8,8 @@
             {% for blog in blog_list %}
                 <li>
                     <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a>
-                    ({{ blog.author }}) ({{ blog.post_date }})
+                    <a href="{{ blog.author.get_absolute_url }}">({{ blog.author }})</a>
+                    ({{ blog.post_date }})
                     <button data-url="{% url 'mark-as-read' blog.pk %}" class="readed-button" type="button">mark as read</button>
                 </li>
             {% endfor %}
